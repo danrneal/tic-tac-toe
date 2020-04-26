@@ -28,13 +28,13 @@ def index():
 
 @app.route("/play/<int:row>/<int:col>")
 def play(row, col):
+    session["board"][row][col] = session["player"]
     session["winner"] = is_winner(
         session["board"],
         session["player"],
         (row, col)
     )
     session["tie"] = is_tie(session["board"])
-    session["board"][row][col] = session["player"]
     session["player"] = switch_player(session["player"])
     session["new_game"] = False
     MOVES.append((row, col))
