@@ -7,6 +7,8 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+MOVES = []
+
 
 @app.route("/")
 def index():
@@ -40,10 +42,8 @@ def play(row, col):
     ):
         session["winner"] = session["turn"]
 
-    if session["turn"] == "X":
-        session["turn"] = "0"
-    else:
-        session["turn"] = "X"
+    switch_player()
+    MOVES.append((row, col))
 
     return redirect(url_for("index"))
 
@@ -51,6 +51,17 @@ def play(row, col):
 @app.route("/reset")
 def reset():
     new_board()
+    return redirect(url_for("index"))
+
+
+@app.route("/undo")
+def undo():
+    if len(MOVES) > 0:
+        (row, col) = MOVES.pop()
+        session["winner"] = None
+        session["board"][row][col] = None
+        switch_player()
+
     return redirect(url_for("index"))
 
 
@@ -62,3 +73,10 @@ def new_board():
         [None, None, None],
     ]
     session["turn"] = "X"
+
+
+def switch_player():
+    if session["turn"] == "X":
+        session["turn"] = "0"
+    else:
+        session["turn"] = "X"
