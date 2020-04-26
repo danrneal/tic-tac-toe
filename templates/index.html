@@ -34,6 +34,9 @@
     {% if winner %}
     <h3>The winner is {{ winner }}!</h3>
     {% endif %}
+    {% if tie %}
+    <h3>The game is a tie!</h3>
+    {% endif %}
     <table>
         {% for i in range(3) %}
         <tr>
@@ -41,15 +44,18 @@
             <td>
                 {% if game[i][j] %}
                 {{ game[i][j] }}
-                {% elif winner %}
+                {% elif winner or tie %}
                 {% else %}
-                <a href="{{ url_for('play', row=i, col=j) }}">Play {{ turn }} here.</a>
+                <a href="{{ url_for('play', row=i, col=j) }}">Play {{ player }} here.</a>
                 {% endif %}
             </td>
             {% endfor %}
         </tr>
         {% endfor %}
     </table>
+    {% if not winner and not tie %}
+    <p><a href="{{ url_for('computer_move') }}">Have Computer Make Move</a></p>
+    {% endif %}
     {% if not new_game %}
     <p><a href="{{ url_for('undo') }}">Undo Move</a></p>
     <p><a href="{{ url_for('reset') }}">Reset Game</a></p>
