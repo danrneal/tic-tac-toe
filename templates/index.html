@@ -42,8 +42,8 @@
         <tr>
             {% for j in range(3) %}
             <td>
-                {% if game[i][j] %}
-                {{ game[i][j] }}
+                {% if board[i][j] %}
+                {{ board[i][j] }}
                 {% elif winner or tie %}
                 {% else %}
                 <a href="{{ url_for('play', row=i, col=j) }}">Play {{ player }} here.</a>

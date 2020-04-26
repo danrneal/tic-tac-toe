@@ -20,7 +20,7 @@ def index():
         "index.html",
         winner=session["winner"],
         tie=session["tie"],
-        game=session["board"],
+        board=session["board"],
         player=session["player"],
         new_game=session["new_game"]
     )
@@ -28,33 +28,24 @@ def index():
 
 @app.route("/play/<int:row>/<int:col>")
 def play(row, col):
-    session["board"][row][col] = session["player"]
-    session["new_game"] = False
     session["winner"] = is_winner(
         session["board"],
         session["player"],
         (row, col)
     )
     session["tie"] = is_tie(session["board"])
+    session["board"][row][col] = session["player"]
     session["player"] = switch_player(session["player"])
+    session["new_game"] = False
     MOVES.append((row, col))
 
     return redirect(url_for("index"))
 
 
-@app.route("/reset")
-def reset():
-    session["winner"] = None
-    session["tie"] = False
-    session["board"] = [
-        [None, None, None],
-        [None, None, None],
-        [None, None, None],
-    ]
-    session["player"] = "X"
-    session["new_game"] = True
-
-    return redirect(url_for("index"))
+@app.route("/computer_move")
+def computer_move():
+    row, col = minimax(session["board"], switch_player(session["player"]))[0]
+    return redirect(url_for("play", row=row, col=col))
 
 
 @app.route("/undo")
@@ -73,10 +64,19 @@ def undo():
     return redirect(url_for("index"))
 
 
-@app.route("/computer_move")
-def computer_move():
-    row, col = minimax(session["board"], switch_player(session["player"]))[0]
-    return redirect(url_for("play", row=row, col=col))
+@app.route("/reset")
+def reset():
+    session["winner"] = None
+    session["tie"] = False
+    session["board"] = [
+        [None, None, None],
+        [None, None, None],
+        [None, None, None],
+    ]
+    session["player"] = "X"
+    session["new_game"] = True
+
+    return redirect(url_for("index"))
 
 
 def switch_player(player):
