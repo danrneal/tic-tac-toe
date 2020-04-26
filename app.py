@@ -7,8 +7,6 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-MOVES = []
-
 
 @app.route("/")
 def index():
@@ -37,7 +35,7 @@ def play(row, col):
     session["tie"] = is_tie(session["board"])
     session["player"] = switch_player(session["player"])
     session["new_game"] = False
-    MOVES.append((row, col))
+    session["moves"].append((row, col))
 
     return redirect(url_for("index"))
 
@@ -51,14 +49,14 @@ def computer_move():
 @app.route("/undo")
 def undo():
 
-    if len(MOVES) > 0:
-        (row, col) = MOVES.pop()
+    if len(session["moves"]) > 0:
+        (row, col) = session["moves"].pop()
         session["winner"] = None
         session["tie"] = False
         session["board"][row][col] = None
         session["player"] = switch_player(session["player"])
 
-    if len(MOVES) == 0:
+    if len(session["moves"]) == 0:
         session["new_game"] = True
 
     return redirect(url_for("index"))
@@ -75,6 +73,7 @@ def reset():
     ]
     session["player"] = "X"
     session["new_game"] = True
+    session["moves"] = []
 
     return redirect(url_for("index"))
 
