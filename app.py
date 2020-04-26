@@ -15,13 +15,30 @@ def index():
         new_board()
 
     return render_template(
-        "index.html", game=session["board"], turn=session["turn"]
+        "index.html",
+        winner=session["winner"],
+        game=session["board"],
+        turn=session["turn"],
     )
 
 
 @app.route("/play/<int:row>/<int:col>")
 def play(row, col):
     session["board"][row][col] = session["turn"]
+
+    if (
+        all(move == session["turn"] for move in session["board"][row]) or
+        all(move[col] == session["turn"] for move in session["board"]) or
+        (
+            row == col and
+            all(session["board"][i][i] == session["turn"] for i in range(3))
+        ) or 
+        (
+            row + col == 2 and
+            all(session["board"][i][2-i] == session["turn"] for i in range(3))
+        )
+    ):
+        session["winner"] = session["turn"]
 
     if session["turn"] == "X":
         session["turn"] = "0"
@@ -38,6 +55,7 @@ def reset():
 
 
 def new_board():
+    session["winner"] = None
     session["board"] = [
         [None, None, None],
         [None, None, None],

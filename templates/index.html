@@ -2,9 +2,16 @@
 <html>
 
 <head>
-    <title>Tic Tac Toe</title>
+    <title>Tic-Tac-Toe</title>
     <style>
+        body {
+            text-align: center;
+        }
+
         table {
+            margin: 10px;
+            margin-left: auto;
+            margin-right: auto;
             border-collapse: collapse;
         }
 
@@ -23,6 +30,10 @@
 </head>
 
 <body>
+    <h1>Tic-Tac-Toe</h1>
+    {% if winner %}
+    <h3>The winner is {{ winner }}!</h3>
+    {% endif %}
     <table>
         {% for i in range(3) %}
         <tr>
@@ -30,6 +41,7 @@
             <td>
                 {% if game[i][j] %}
                 {{ game[i][j] }}
+                {% elif winner %}
                 {% else %}
                 <a href="{{ url_for('play', row=i, col=j) }}">Play {{ turn }} here.</a>
                 {% endif %}
